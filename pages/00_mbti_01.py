@@ -1,83 +1,152 @@
 import streamlit as st
-from PIL import Image
-import folium
-from streamlit_folium import st_folium
 
-# MBTI 궁합 추천 및 데이트 코스
-mbti_matches = {
-    "INTJ": {"match": "ENFP", "reason": "ENFP의 따뜻함과 창의력이 INTJ의 계획적인 성향을 보완해줍니다.", "date": "아날로그 감성 북카페 & 창작 공방 체험 📚🎨"},
-    "INTP": {"match": "ESFJ", "reason": "ESFJ의 사교성과 따뜻함이 INTP의 내향적 성향에 활력을 줍니다.", "date": "전시회 데이트 & 디저트 카페 🍰🖼️"},
-    "ENTJ": {"match": "INFP", "reason": "INFP의 감성적인 배려가 ENTJ의 열정과 잘 어우러집니다.", "date": "공원 산책 & 감성 영화관 🎬🌳"},
-    "ENTP": {"match": "INFJ", "reason": "INFJ의 이상주의와 ENTP의 에너지가 깊이 있는 소통을 가능하게 합니다.", "date": "북토크 & 즉흥 여행 📚✈️"},
-    "INFJ": {"match": "ENFP", "reason": "감성과 이상을 추구하는 INFJ에게 ENFP의 따뜻함이 큰 위로가 됩니다.", "date": "시집 낭독회 & 벽화마을 데이트 🎨📖"},
-    "INFP": {"match": "ENTJ", "reason": "INFP의 이상주의와 ENTJ의 추진력이 좋은 균형을 이룹니다.", "date": "감성 카페 & 마켓 구경 ☕🛍️"},
-    "ENFJ": {"match": "INFP", "reason": "서로에 대한 공감 능력이 뛰어나 따뜻한 관계를 유지합니다.", "date": "소극장 연극 & 야경 산책 🎭🌃"},
-    "ENFP": {"match": "INTJ", "reason": "INTJ의 깊은 사고력과 ENFP의 창의성은 훌륭한 시너지를 냅니다.", "date": "보드게임 카페 & 벼룩시장 🧩🛒"},
-    "ISTJ": {"match": "ESFP", "reason": "ESFP의 즉흥성과 ISTJ의 책임감이 상호 보완됩니다.", "date": "테마파크 & 저녁 파스타 데이트 🎢🍝"},
-    "ISFJ": {"match": "ESTP", "reason": "ISFJ의 배려심과 ESTP의 활기찬 성격이 조화를 이룹니다.", "date": "실내 암벽등반 & 건강식 디너 🧗🥗"},
-    "ESTJ": {"match": "ISFP", "reason": "ESTJ의 조직력과 ISFP의 부드러움이 균형을 이룹니다.", "date": "아쿠아리움 & 자연사 박물관 🐠🏛️"},
-    "ESFJ": {"match": "INTP", "reason": "ESFJ의 감정 표현력과 INTP의 분석력이 서로를 자극합니다.", "date": "맛집 투어 & 별자리 관측 🌌🍜"},
-    "ISTP": {"match": "ENFJ", "reason": "ENFJ의 따뜻한 관심이 ISTP의 조용한 성향을 끌어냅니다.", "date": "VR 체험 & 플래너 만들기 🎮📓"},
-    "ISFP": {"match": "ESTJ", "reason": "ESTJ의 결단력과 ISFP의 감수성이 잘 맞습니다.", "date": "한강 피크닉 & 갤러리 데이트 🍱🖌️"},
-    "ESTP": {"match": "ISFJ", "reason": "ISFJ의 따뜻함과 ESTP의 모험심이 잘 어울립니다.", "date": "카트레이싱 & 야시장 구경 🏎️🌮"},
-    "ESFP": {"match": "ISTJ", "reason": "ISTJ의 안정감이 ESFP의 감정 표현을 잘 수용합니다.", "date": "박물관 & 고급 다이닝 데이트 🏺🍽️"},
+mbti_jobs = {
+    "INTJ": {
+        "title": "🧠 전략가형 - INTJ",
+        "description": "📌 성격 특성: 독립적이고 분석적인 성향. 장기적인 계획을 세우는 데 능하며 지적 호기심이 많고 효율성과 논리를 중요시합니다.",
+        "jobs": [
+            {"name": "🧪 데이터 사이언티스트", "reason": "복잡한 데이터를 체계적으로 분석하고 미래를 예측하는 데 탁월한 능력을 발휘합니다.", "major": "통계학, 컴퓨터공학, 데이터사이언스"},
+            {"name": "📊 전략 컨설턴트", "reason": "논리적 사고와 시스템적 분석을 통해 조직의 방향을 제시할 수 있습니다.", "major": "경영학, 경제학, 산업공학"}
+        ]
+    },
+    "INTP": {
+        "title": "🔍 논리술사형 - INTP",
+        "description": "📌 성격 특성: 분석적이고 창의적인 사고를 지닌 사색가형. 이론과 개념을 탐구하며 독창적인 해결책을 추구합니다.",
+        "jobs": [
+            {"name": "🧠 이론 물리학자", "reason": "복잡한 개념과 이론을 추론하고 실험하는 데 적합한 사고 구조를 가지고 있어요.", "major": "물리학, 수학, 천문학"},
+            {"name": "👨‍💻 소프트웨어 엔지니어", "reason": "논리적인 문제 해결과 체계적인 사고로 프로그래밍에 강점을 가집니다.", "major": "컴퓨터공학, 소프트웨어학과"}
+        ]
+    },
+    "ENTJ": {
+        "title": "🚀 통솔자형 - ENTJ",
+        "description": "📌 성격 특성: 타고난 리더로서 비전을 가지고 효율적으로 목표를 달성하는 성향. 구조화된 사고와 추진력이 뛰어납니다.",
+        "jobs": [
+            {"name": "💼 CEO", "reason": "조직 전체를 이끄는 전략과 결단력을 갖춘 리더십이 잘 어울려요.", "major": "경영학, 경제학, 글로벌비즈니스학과"},
+            {"name": "👩‍⚖️ 변호사", "reason": "설득력과 논리로 무장한 당신은 법적 판단과 주장에 강합니다.", "major": "법학과, 정치외교학과"}
+        ]
+    },
+    "ENTP": {
+        "title": "💡 발명가형 - ENTP",
+        "description": "📌 성격 특성: 유쾌하고 기발하며 토론을 즐기고 변화에 능한 혁신가. 새로운 아이디어와 프로젝트에 도전하는 걸 좋아합니다.",
+        "jobs": [
+            {"name": "🎬 크리에이터", "reason": "자유로운 발상과 사람들의 관심을 끄는 콘텐츠를 만들 수 있어요.", "major": "영상학과, 디지털콘텐츠학과"},
+            {"name": "🧩 UX 디자이너", "reason": "사용자의 경험을 분석하고 창의적으로 해결책을 제시하는 데 능숙합니다.", "major": "산업디자인, HCI, 디지털미디어학과"}
+        ]
+    },
+    "INFJ": {
+        "title": "🌌 옹호자형 - INFJ",
+        "description": "📌 성격 특성: 통찰력 있고 이상주의적인 성향. 세상을 더 나은 곳으로 만들고자 하는 강한 신념이 있습니다.",
+        "jobs": [
+            {"name": "🧘‍♀️ 상담사", "reason": "깊은 공감력과 진지한 태도로 내담자의 감정을 잘 이해하고 도울 수 있어요.", "major": "심리학과, 상담학과"},
+            {"name": "🎨 예술가", "reason": "감정과 의미를 창작을 통해 전달하는 데 탁월한 능력을 지녔습니다.", "major": "미술학과, 순수예술학과"}
+        ]
+    },
+    "INFP": {
+        "title": "🎨 중재자형 - INFP",
+        "description": "📌 성격 특성: 감정이 풍부하고 가치지향적인 성향. 내면의 철학과 신념을 실현하고자 하는 의지가 강합니다.",
+        "jobs": [
+            {"name": "📖 소설가", "reason": "자신만의 세계관과 이야기를 글로 풀어내는 데 재능이 있어요.", "major": "문예창작과, 국문학과"},
+            {"name": "🧘‍♂️ 심리상담가", "reason": "타인의 아픔에 공감하고 내면을 치유하는 데 큰 만족을 느낄 수 있어요.", "major": "심리학, 사회복지학과"}
+        ]
+    },
+    "ENFJ": {
+        "title": "🦸‍♀️ 선도자형 - ENFJ",
+        "description": "📌 성격 특성: 따뜻한 리더십과 공동체 중심의 사고. 타인의 성장을 이끌어내는 데서 기쁨을 느낍니다.",
+        "jobs": [
+            {"name": "🧑‍🏫 교사", "reason": "학생들의 잠재력을 발견하고 긍정적인 영향을 줄 수 있어요.", "major": "교육학, 국어교육, 영어교육 등 교직학과"},
+            {"name": "📢 홍보 전략가", "reason": "공감과 소통 능력으로 브랜드의 가치를 효과적으로 전달할 수 있습니다.", "major": "광고홍보학과, 커뮤니케이션학과"}
+        ]
+    },
+    "ENFP": {
+        "title": "🌈 활동가형 - ENFP",
+        "description": "📌 성격 특성: 에너지 넘치고 창의적인 아이디어 뱅크! 사람들과 소통하며 변화를 만들어가는 데에 강한 열정을 지녔습니다.",
+        "jobs": [
+            {"name": "🎤 방송인", "reason": "자신의 개성과 열정을 표현하고, 사람들과 소통하는 데 탁월하기 때문이에요.", "major": "신문방송학, 연극영화과, 미디어커뮤니케이션학과"},
+            {"name": "🧑‍🏫 교육 전문가", "reason": "사람의 성장에 관심이 많고, 진정성 있는 피드백으로 학습을 도울 수 있어요.", "major": "교육학, 심리학, 아동가족학"}
+        ]
+    },
+    "ISTJ": {
+        "title": "🧱 청렴결백한 논리주의자 - ISTJ",
+        "description": "📌 성격 특성: 책임감 있고 신뢰할 수 있으며 사실과 원칙을 중시하는 성향. 규칙을 잘 따르며 조직적인 환경을 선호합니다.",
+        "jobs": [
+            {"name": "🧾 회계사", "reason": "정확성과 분석력이 요구되는 직무에 강합니다.", "major": "회계학, 경영학"},
+            {"name": "📐 토목 엔지니어", "reason": "체계적이고 실용적인 업무에 능하며 구조적인 문제 해결에 적합합니다.", "major": "토목공학과, 건설환경공학과"}
+        ]
+    },
+    "ISFJ": {
+        "title": "🕊️ 수호자형 - ISFJ",
+        "description": "📌 성격 특성: 따뜻하고 헌신적이며 실용적인 도움을 주는 데 기쁨을 느끼는 성향. 조용하고 성실하며 타인을 세심하게 배려합니다.",
+        "jobs": [
+            {"name": "👩‍⚕️ 간호사", "reason": "세심한 배려와 책임감으로 환자의 건강과 안녕을 돌보는 역할을 잘 수행할 수 있습니다.", "major": "간호학과, 보건학과"},
+            {"name": "🧸 유치원 교사", "reason": "아이들에게 따뜻함과 안정감을 주며 전인교육을 실천할 수 있습니다.", "major": "유아교육과, 아동학과"}
+        ]
+    },
+    "ESTJ": {
+        "title": "🧭 경영자형 - ESTJ",
+        "description": "📌 성격 특성: 조직적이고 실용적인 성향. 리더십이 강하며 전통과 질서를 존중합니다.",
+        "jobs": [
+            {"name": "📊 관리자", "reason": "조직을 효율적으로 운영하고 관리할 수 있는 책임감과 판단력을 가집니다.", "major": "경영학과, 행정학과"},
+            {"name": "🗂️ 프로젝트 매니저", "reason": "계획을 수립하고 자원을 효율적으로 배분하는 능력에 강점을 보입니다.", "major": "산업공학, 정보시스템학과"}
+        ]
+    },
+    "ESFJ": {
+        "title": "🤝 사교적인 보호자형 - ESFJ",
+        "description": "📌 성격 특성: 따뜻하고 친화력이 뛰어나며 공동체 내 조화를 중요시합니다.",
+        "jobs": [
+            {"name": "🏥 사회복지사", "reason": "타인을 돕고 조직 내에서 조화를 이끌어내는 데 적합합니다.", "major": "사회복지학과, 상담학과"},
+            {"name": "💼 HR 매니저", "reason": "사람을 관리하고 지원하는 역할에서 만족과 성과를 창출할 수 있습니다.", "major": "경영학과(인사관리), 심리학과"}
+        ]
+    },
+    "ISTP": {
+        "title": "🔧 장인형 - ISTP",
+        "description": "📌 성격 특성: 논리적이고 실용적이며 문제 해결에 강한 성향. 분석력과 손재주가 뛰어납니다.",
+        "jobs": [
+            {"name": "👨‍🔧 정비사", "reason": "기계나 도구에 대한 이해도가 높고 실질적인 수리 및 제작에 능합니다.", "major": "기계공학과, 자동차공학과"},
+            {"name": "🎮 게임 개발자", "reason": "논리적 사고력과 창의적 프로그래밍 능력이 조화를 이룹니다.", "major": "컴퓨터공학, 게임학과"}
+        ]
+    },
+    "ISFP": {
+        "title": "🎵 예술가형 - ISFP",
+        "description": "📌 성격 특성: 감성적이고 조용하며 미적 감각이 뛰어난 성향. 실용성과 아름다움을 동시에 추구합니다.",
+        "jobs": [
+            {"name": "🎨 화가", "reason": "감정을 시각적으로 표현하고 창조하는 데 강점을 가집니다.", "major": "조형예술과, 회화과"},
+            {"name": "🌿 플로리스트", "reason": "섬세한 감성과 감각을 통해 자연을 예술로 재해석할 수 있어요.", "major": "원예학과, 조경학과"}
+        ]
+    },
+    "ESTP": {
+        "title": "⚡ 사업가형 - ESTP",
+        "description": "📌 성격 특성: 모험심이 강하고 실용적인 문제 해결에 능한 성향. 즉흥적이면서도 실행력이 뛰어납니다.",
+        "jobs": [
+            {"name": "🚘 자동차 딜러", "reason": "설득력과 빠른 판단력으로 영업 활동에 큰 강점을 발휘할 수 있어요.", "major": "유통마케팅학과, 자동차학과"},
+            {"name": "🎮 e스포츠 선수", "reason": "즉각적인 반응 속도와 경쟁심을 발휘할 수 있는 환경에서 두각을 나타낼 수 있어요.", "major": "e스포츠학과, 게임전공"}
+        ]
+    },
+    "ESFP": {
+        "title": "🎉 연예인형 - ESFP",
+        "description": "📌 성격 특성: 외향적이고 낙천적이며 사람들과의 상호작용을 즐깁니다. 즉흥적이고 감각적인 활동을 좋아합니다.",
+        "jobs": [
+            {"name": "🎭 배우", "reason": "무대 위에서 자신의 감정을 표현하며 사람들과 깊이 소통할 수 있어요.", "major": "연극영화과, 공연예술학과"},
+            {"name": "🎪 이벤트 플래너", "reason": "행사를 기획하고 조율하는 일에서 창의력과 사교성을 잘 활용할 수 있어요.", "major": "관광경영학과, 이벤트연출과"}
+        ]
+    }
 }
 
-# 추천 장소 목록 (서울)
-seoul_places = {
-    "북촌 한옥마을": [37.5826, 126.9830],
-    "서울숲": [37.5444, 127.0370],
-    "한강 반포공원": [37.5123, 126.9957],
-    "DDP (동대문디자인플라자)": [37.5665, 127.0095],
-    "남산타워": [37.5512, 126.9882],
-    "경복궁": [37.5796, 126.9770]
-}
+st.set_page_config(page_title="MBTI 직업 추천기 💼", page_icon="🔮", layout="centered")
 
-# Streamlit 앱 설정
-st.set_page_config(page_title="MBTI 커플 궁합 추천 💘", page_icon="💑", layout="wide")
+st.title("💫 MBTI 기반 직업 추천기")
+st.markdown("당신의 **MBTI**는 무엇인가요? 💡\n선택하면 찰떡같은 직업을 추천해드릴게요! 🌟")
 
-# 헤더 영역
-st.markdown("""
-    <h1 style='text-align: center; color: #ff69b4;'>💞 MBTI 궁합 추천 웹앱 💞</h1>
-    <h3 style='text-align: center;'>당신의 성격 유형에 맞는 최고의 커플 매칭을 알아보세요! 🌟</h3>
-""", unsafe_allow_html=True)
+selected_mbti = st.selectbox("🧬 MBTI 유형을 선택하세요:", list(mbti_jobs.keys()), index=0)
 
-# 사이드바 설정
-st.sidebar.header("📌 사용 방법")
-st.sidebar.write("MBTI 유형을 선택하면 궁합 좋은 커플 유형과 데이트 코스를 추천해줘요!")
-selected_mbti = st.sidebar.selectbox("당신의 MBTI 유형은 무엇인가요? 🧬", list(mbti_matches.keys()))
-
-# 메인 콘텐츠
-st.markdown("""
-<div style='text-align: center;'>
-    <img src='https://media.giphy.com/media/26FPpP8K0vBSF7rNu/giphy.gif' width='300'>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown(f"## 💌 당신의 MBTI는 **:rainbow[{selected_mbti}]**!")
-
-if selected_mbti in mbti_matches:
-    match = mbti_matches[selected_mbti]
-    st.markdown(f"### 💘 가장 잘 어울리는 커플 유형: **{match['match']}**")
-    st.markdown(f"#### 💡 이유: {match['reason']}")
-    st.markdown(f"#### 💑 추천 데이트 코스: {match['date']}")
-else:
-    st.warning("해당 MBTI에 대한 커플 추천 정보가 아직 없습니다. 🙏")
-
-# 장소 추천 섹션
-st.markdown("---")
-st.markdown("### 📍 서울에서 가볼만한 추천 장소")
-selected_place = st.selectbox("데이트 장소를 골라보세요!", list(seoul_places.keys()))
-
-if selected_place:
-    lat, lon = seoul_places[selected_place]
-    st.markdown(f"**{selected_place}** 위치 보기 🗺️")
-    map_view = folium.Map(location=[lat, lon], zoom_start=15)
-    folium.Marker([lat, lon], popup=selected_place).add_to(map_view)
-    st_folium(map_view, width=700, height=500)
-
-# 하단 영역
-st.markdown("""
----
-<center>Made with ❤️ by Streamlit & GPT</center>
-""", unsafe_allow_html=True)
+if selected_mbti:
+    info = mbti_jobs[selected_mbti]
+    st.header(info["title"])
+    st.markdown(info["description"])
+    st.subheader("✨ 추천 직업:")
+    for job in info["jobs"]:
+        st.markdown(f"**{job['name']}**")
+        st.markdown(f"🧠 추천 이유: {job['reason']}")
+        st.markdown(f"🎓 추천 전공: `{job['major']}`")
+        st.markdown("---")
+    st.success("🎯 당신에게 꼭 맞는 직업이 보이시나요?")
+    st.balloons()
