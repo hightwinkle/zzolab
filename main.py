@@ -84,4 +84,33 @@ job_descriptions = {
     "스타트업 창업가 🌟": "스타트업을 설립하고 혁신적인 비즈니스를 이끄는 창업가입니다.",
     "관리자 🗂️": "조직의 운영을 관리하고 업무 프로세스를 최적화하는 역할입니다.",
     "운영 책임자 🔧": "기업의 운영 전반을 책임지고 프로세스 개선을 추진합니다.",
-    "검사 ⚖️
+    "검사 ⚖️": "법정에서 공공 이익을 수호하는 검사 직무를 수행합니다.",
+    "HR 매니저 👫": "인재 채용, 교육, 평가 등 인사 관리 전반을 담당합니다.",
+    "간호 관리자 🏥": "병원 및 의료 기관에서 간호 업무를 총괄 관리합니다.",
+    "리더십 코치 💼": "리더의 역량 개발과 팀 빌딩을 지원하는 전문 코치입니다.",
+    "강사 🎤": "교육 및 훈련 프로그램을 기획하고 진행하는 전문 강사입니다.",
+    "커뮤니티 매니저 🌍": "온라인 또는 오프라인 커뮤니티를 운영하고 관리합니다.",
+    "CEO 🏢": "기업의 최고 경영자로서 비전 수립 및 의사 결정을 담당합니다.",
+    "경영 컨설턴트 📈": "기업의 경영 문제를 분석하고 전략적 해결책을 제시합니다.",
+    "프로젝트 리더 🏆": "프로젝트 팀을 이끌고 목표 달성을 책임지는 리더입니다.",
+}
+
+# 사용자 선택
+selected_mbti = st.selectbox("🔮 MBTI를 선택하세요", mbti_list)
+
+# 추천 버튼 및 결과
+if st.button("💡 추천받기"):
+    recs = career_recommendations.get(selected_mbti, [])
+    if recs:
+        st.markdown("<h3 style='color: #FF4500;'>🎉 추천 직업:</h3>", unsafe_allow_html=True)
+        for job in recs:
+            if st.button(job, key=job):
+                desc = job_descriptions.get(job, "설명이 없습니다.")
+                st.info(f"**{job}**\n\n{desc}")
+        st.balloons()
+    else:
+        st.warning("😢 추천할 직업이 없어요...")
+
+# 하단 푸터
+st.markdown("---")
+st.markdown("<div style='text-align: center; color: #888888;'>© 2025 MBTI 진로 추천 사이트</div>", unsafe_allow_html=True)
